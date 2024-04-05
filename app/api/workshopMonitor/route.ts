@@ -1,15 +1,20 @@
 import { MonitoredStores } from "@/app/_db/stores";
-import storeUrl from "@/app/_libs/store-url";
-import { simpleToken } from "@/app/_db/configs";
-import { Subscriber } from "@/app/_types/types";
+import storeUrl from "@/app/_libs/get-store-url";
+import { Subscriber, Workshop } from "@/app/_types/types";
+import { registerUrl } from "@/app/_db/configs";
+import { sendEmail } from "@/app/_libs/send-email";
+import { WorkshopInfoEmail } from "@/app/_components/email-template";
+import { getFormattedDate } from "@/app/_libs/get-formatted-date";
 
 export async function GET(req: Request): Promise<Response> {
     
-    const headers = req.headers;
-    const token = headers.get("Authorization");
-    const BearerToken = token?.split(" ")[1];
+    const simpleToken = process.env.SIMPLE_TOKEN ?? "";
 
-    if (BearerToken !== simpleToken) {
+    const headers = req.headers;
+    const requestToken = headers.get("Authorization");
+    const BearerToken = requestToken?.split(" ")[1];
+
+    if (simpleToken==="" || BearerToken !== simpleToken) {
         return new Response(JSON.stringify({ 
             sucess: false,
             error: "Unauthorized",
@@ -25,23 +30,56 @@ export async function GET(req: Request): Promise<Response> {
     MonitoredStores.forEach(async (store) => {
         const url = storeUrl(store.storeID);
         const subscribers = store.subscribers;
+        
         try {
-            const response = await fetch(url);
-            const data = await response.json();
-            console.log(data);
-            if (data && data.length > 0) {
+            fetch(url)
+            .then( async(response) => await response.json())
+            .then(data => {
+                const workshops = data.workshopEventWsDTO;
+                if(!workshops){
+                    //TODO: if(!workshops) Send email to admin
+                    console.log('No workshop available, or the API structure has changed. Please check the API response.');
+                    return;
+                };
+
+                const workshopAmount = workshops.length;
+                const workshopList: Workshop[]= [];
+
+                for(let i = 0; i < workshopAmount; i++){
+                    const { startTime, endTime, attendeeLimit, workshopType, remainingSeats, eventType } = workshops[i];
+                    // if (remainingSeats > 0) {
+                        const startTimeFormatted = getFormattedDate(startTime);
+                        const endTimeFormatted = getFormattedDate(endTime);
+                        const { name, description, photo } = eventType;    
+                        const photoUrl = photo.url;
+                        const workshop: Workshop = {
+                            startTime: startTimeFormatted,
+                            endTime: endTimeFormatted,
+                            attendeeLimit,
+                            workshopType,
+                            remainingSeats,
+                            name,
+                            description,
+                            photoUrl
+                        };
+                        workshopList.push(workshop);
+                    }
+                // }
+
+                if(workshopList.length === 0) {
+                    console.log(`No available workshops at ${store.storeName}`);
+                    return;
+                }
+
+                const emailHtmlContet: String = WorkshopInfoEmail(workshopList, registerUrl);
+
                 subscribers.forEach(async (subscriber: Subscriber) => {
                     const { email } = subscriber;
-                    const message = {
-                        from: "Workshop Monitor",
-                        to: email,
-                        subject: `Workshop Monitor - ${store.storeName}`,
-                        text: `Workshop Monitor - ${store.storeName} has new workshops available.`
-                    };
-                    console.log(message);
-                    // await sendEmail(message);
+                    const subject: string = `Home Depot ${store.storeName} has new workshops available - Workshop Monitor`;
+                    await sendEmail(subject, emailHtmlContet, email);
                 });
-            }
+                
+            });
         } catch (error) {
             console.log(error);
         }

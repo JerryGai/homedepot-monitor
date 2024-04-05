@@ -24,4 +24,15 @@ type Store = {
     subscribers: Subscribers;
     };
 
-export type { EmailTemplate, EmailSender, Subscriber, Subscribers, Store };
+type Workshop = {
+    startTime: string;
+    endTime: string;
+    attendeeLimit: number;
+    workshopType: string;
+    remainingSeats: number;
+    name: string;
+    description: string;
+    photoUrl: string;
+};
+
+export type { EmailTemplate, EmailSender, Subscriber, Subscribers, Store, Workshop};

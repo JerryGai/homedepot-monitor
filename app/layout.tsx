@@ -6,9 +6,6 @@ import { Analytics } from "@vercel/analytics/react";
 
 const montserrat = Montserrat({ subsets: ["latin"] });
 
-const simpleToken = process.env.SIMPLE_TOKEN ?? "";
-
-
 export const metadata: Metadata = {
   title: "HomeDepot Workshop Monitor",
   description: "Mnitor HomeDepot workshops near your location, and get notified when new workshops are available.",
@@ -19,7 +16,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  console.log(simpleToken);
   return (
     <html lang="en">
       <body className={montserrat.className}>

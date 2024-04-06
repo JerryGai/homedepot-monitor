@@ -76,9 +76,13 @@ export async function GET(req: Request): Promise<Response> {
                 subscribers.forEach(async (subscriber: Subscriber) => {
                     const { email } = subscriber;
                     const subject: string = `Home Depot ${store.storeName} has new workshops available - Workshop Monitor`;
-                    await sendEmail(subject, emailHtmlContet, email);
+                    try {
+                        await sendEmail(subject, emailHtmlContet, email);
+                        console.log(`Email sent to ${email}`);
+                    }catch(error){
+                        console.log(`Failed to send email to ${email}`);
+                    }
                 });
-                
             });
         } catch (error) {
             console.log(error);

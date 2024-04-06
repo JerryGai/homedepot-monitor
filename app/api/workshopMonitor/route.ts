@@ -1,7 +1,6 @@
 import { MonitoredStores } from "@/app/_db/stores";
 import storeUrl from "@/app/_libs/get-store-url";
 import { Subscriber, Workshop } from "@/app/_types/types";
-import { registerUrl } from "@/app/_db/configs";
 import { sendEmail } from "@/app/_libs/send-email";
 import { WorkshopInfoEmail } from "@/app/_components/email-template";
 import { getFormattedDate } from "@/app/_libs/get-formatted-date";
@@ -9,6 +8,7 @@ import { getFormattedDate } from "@/app/_libs/get-formatted-date";
 export async function GET(req: Request): Promise<Response> {
     
     const simpleToken = process.env.SIMPLE_TOKEN ?? "";
+    const registerUrl = process.env.REGISTRATION_URL ?? "";
 
     const headers = req.headers;
     const requestToken = headers.get("Authorization");

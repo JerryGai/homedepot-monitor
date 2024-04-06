@@ -1,43 +1,42 @@
+import { Resend } from "resend";
 
-const nodemailer = require('nodemailer');
-const senderEmail = process.env.SENDER_APP_EMAIL;
-const senderPassword = process.env.SENDER_APP_PASSWORD;
+const resendApiKey = process.env.RESEND_API_KEY;
+const resend = new Resend(resendApiKey);
 
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    secure: true, 
-    auth: {
-        user: senderEmail,
-        pass: senderPassword
-    }
-});
-
-export const sendEmail = async (subject: String, htmlContent: String, emailAddress: String) => {
-    const mailOptions = {
-        from: 'Workshop Monitor',
-        to: emailAddress,
-        subject: subject,
-        html: htmlContent
-    };
+export const sendEmail = async (subject: string, htmlContent: string, emailAddress: string) => {
     try {
-        await transporter.sendMail(mailOptions);
-        console.log('Email sent successfully');
-    } catch (error) {
-        console.log('Error sending email: ', error);
-    }
+        const { data, error } = await resend.emails.send({
+          from: 'Workshop Monitor <@>',
+          to: emailAddress,
+          subject: subject,
+          react: htmlContent,
+        });
+
+        if (error) {
+          return Response.json({ error });
+        }
+
+        return Response.json({ data });
+      } catch (error) {
+        return Response.json({ error });
+      }
+
 }
 
-export const sendAdminEmail = async (subject: String, htmlContent: String) => {
-    const mailOptions = {
-        from: 'Workshop Monitor',
-        to: 'gaijianyi@gmail.com',
-        subject: 'Workshop Monitor - No workshops available',
-        html: 'No workshop available, or the API structure has changed. Please check the API response.'
-    };
+export const sendAdminEmail = async (subject: string, htmlContent: string) => {
     try {
-        await transporter.sendMail(mailOptions);
-        console.log('Email sent successfully');
-    } catch (error) {
-        console.log('Error sending email: ', error);
-    }
+        const { data, error } = await resend.emails.send({
+          from: 'Workshop Monitor <@>',
+          to: 'gaijianyi@gmail.com',
+          subject: subject,
+          react: htmlContent,
+        });
+
+        if (error) {
+          return Response.json({ error });
+        }
+        return Response.json({ data });
+      } catch (error) {
+        return Response.json({ error });
+      }
 }

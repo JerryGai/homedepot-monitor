@@ -71,7 +71,7 @@ export async function GET(req: Request): Promise<Response> {
                     return;
                 }
 
-                const emailHtmlContet: String = WorkshopInfoEmail(workshopList, registerUrl);
+                const emailHtmlContet: string = WorkshopInfoEmail(workshopList, registerUrl);
 
                 subscribers.forEach(async (subscriber: Subscriber) => {
                     const { email } = subscriber;

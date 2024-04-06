@@ -1,4 +1,4 @@
-export function getFormattedDate(date:String): string {
+export function getFormattedDate(date:string): string {
     const dateComponents = date.split(/[T-]/);
     const year = dateComponents[0];
     const month = dateComponents[1];

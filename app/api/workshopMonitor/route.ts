@@ -1,7 +1,7 @@
 import { MonitoredStores } from "@/app/_db/stores";
 import storeUrl from "@/app/_libs/get-store-url";
 import { Subscriber, Workshop } from "@/app/_types/types";
-import { sendEmail } from "@/app/_libs/send-email";
+import { sendAdminEmail, sendNoticeEmail } from "@/app/_libs/send-email";
 import { WorkshopInfoEmail } from "@/app/_components/email-template";
 import { getFormattedDate } from "@/app/_libs/get-formatted-date";
 
@@ -77,7 +77,7 @@ export async function GET(req: Request): Promise<Response> {
                     const { email } = subscriber;
                     const subject: string = `Home Depot ${store.storeName} has new workshops available - Workshop Monitor`;
                     try {
-                        await sendEmail(subject, emailHtmlContet, email);
+                        await sendNoticeEmail(subject, emailHtmlContet, email);
                         console.log(`Email sent to ${email}`);
                     }catch(error){
                         console.log(`Failed to send email to ${email}`);

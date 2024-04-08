@@ -21,8 +21,8 @@ const workshopTable = (workshop: Workshop) => `
     <tr><td>Workshop Type: </td><td>${workshop.workshopType}</td></tr>
     <tr><td>Start Time: </td><td>${workshop.startTime}</td></tr>
     <tr><td>End Time: </td><td>${workshop.endTime}</td></tr>
-    <tr><td>AttendeeLimit </td><td><b style="font-size:24px;">${workshop.attendeeLimit}</b></td></tr>
-    <tr><td>Remaining Seats: </td><td><b style="font-size:24px;">${workshop.remainingSeats}</b></td></tr>
+    <tr><td>AttendeeLimit </td><td><b style="font-size:24px;color:red;">${workshop.attendeeLimit}</b></td></tr>
+    <tr><td>Remaining Seats: </td><td><b style="font-size:24px;color:green;">${workshop.remainingSeats}</b></td></tr>
     <tr><td>Description: </td><td>${workshop.description}</td></tr>
     <tr><td colspan="2" style="height: 30px;"></td></tr>
     <tr><td colspan="2"><img src="${workshop.photoUrl}" style="width: 100%; height: auto;" /></td></tr>

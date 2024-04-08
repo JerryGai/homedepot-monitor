@@ -25,13 +25,18 @@ export const sendNoticeEmail = async (subject: String, htmlContent: String, emai
         subject: subject,
         html: htmlContent
     };
-
-    try {
-        await transporter.sendMail(mailOptions);
-        console.log('Email sent successfully');
-    } catch (error) {
-        console.log('Error sending email: ', error);
-    }
+    
+    await new Promise((resolve, reject) => {
+        transporter.sendMail(mailOptions, (error: any, info:any) => {
+            if (error) {
+                console.log('Error sending email: ', error);
+                reject(error);
+            } else {
+                console.log('Email sent successfully');
+                resolve(info);
+            }
+        });
+    });
 }
 
 
@@ -47,7 +52,6 @@ export const sendAdminEmail = async (subject: string, htmlContent: string, email
         if (error) {
           return Response.json({ error });
         }
-
         return Response.json({ data });
       } catch (error) {
         return Response.json({ error });

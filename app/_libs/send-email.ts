@@ -20,7 +20,7 @@ const transporter = nodemailer.createTransport({
 
 export const sendNoticeEmail = async (subject: String, htmlContent: String, emailAddress: String) => {
     const mailOptions = {
-        from: 'Workshop Monitor',
+        from: noticeSenderEmail,
         to: emailAddress,
         subject: subject,
         html: htmlContent

@@ -26,8 +26,7 @@ export const sendNoticeEmail = async (subject: String, htmlContent: String, emai
         })
         .sendMail(mailOptions);
         console.log('Email sent: ' + emailAddress);
-    }
-    catch(error){
+    } catch(error) {
         console.log('Error sending email: ' + error);
         sendAdminEmail(
             'Error sending email', 

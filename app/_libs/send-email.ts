@@ -1,49 +1,47 @@
 import { Resend } from "resend";
 
 const nodemailer = require('nodemailer');
-const resendApiKey = process.env.RESEND_API_KEY;
-const resend = new Resend(resendApiKey);
-const adminSenderEmail = 'Workshop Monitor <no-replay@updates.realtoweb.ca>';
-const noticeSenderEmail = process.env.SENDER_APP_EMAIL;
-const noticeSenderPassword = process.env.SENDER_APP_PASSWORD;
-
-const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    service: 'gmail',
-    port: 465,
-    secure: true, 
-    auth: {
-        user: noticeSenderEmail,
-        pass: noticeSenderPassword
-    }
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
+const resendSenderEmail = 'Workshop Monitor <no-replay@updates.realtoweb.ca>';
 
 export const sendNoticeEmail = async (subject: String, htmlContent: String, emailAddress: String) => {
     const mailOptions = {
-        from: noticeSenderEmail,
+        from: process.env.SENDER_APP_EMAIL,
         to: emailAddress,
         subject: subject,
         html: htmlContent
     };
     
-    await new Promise((resolve, reject) => {
-        transporter.sendMail(mailOptions, (error: any, info:any) => {
-            if (error) {
-                console.log('Error sending email: ', error);
-                reject(error);
-            } else {
-                console.log('Email sent successfully');
-                resolve(info);
-            }
-        });
-    });
+    try{
+        await nodemailer
+        .createTransport({
+            host: 'smtp.gmail.com',
+            service: 'gmail',
+            port: 465,
+            secure: true, 
+            auth: {
+                user: process.env.SENDER_APP_EMAIL,
+                pass: process.env.SENDER_APP_PASSWORD
+            },
+        })
+        .sendMail(mailOptions);
+        console.log('Email sent: ' + emailAddress);
+    }
+    catch(error){
+        console.log('Error sending email: ' + error);
+        sendAdminEmail(
+            'Error sending email', 
+            'Error sending email: ' + error, 
+            process.env.ADMIN_EMAIL ?? 'gaijianyi@gmail.com'
+        );
+    }
 }
 
 
 export const sendAdminEmail = async (subject: string, htmlContent: string, emailAddress: string) => {
     try {
         const { data, error } = await resend.emails.send({
-          from: adminSenderEmail,
+          from: resendSenderEmail,
           to: emailAddress,
           subject: subject,
           html: htmlContent,

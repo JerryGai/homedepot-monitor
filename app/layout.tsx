@@ -8,7 +8,7 @@ const montserrat = Montserrat({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "HomeDepot Workshop Monitor",
-  description: "Mnitor HomeDepot workshops near your location, and get notified when new workshops are available.",
+  description: "Monitor HomeDepot workshops near your location, and get notified when new workshops are available.",
 };
 
 export default function RootLayout({
